@@ -2,11 +2,11 @@
 
 A Python script to identify possible errors and inconsistencies in Extranet and Operoo.
 
-**NOTE: There will likely be false-positives can be safely ignored**
+**NOTE: There will likely be false-positives that can be safely ignored**
 
 ## Installation
 
-1. Make sure you have Python and git installed
+1. Make sure you have Python 3.7+ and git installed
 1. Clone this repository:
 
     ```bash
@@ -17,7 +17,8 @@ A Python script to identify possible errors and inconsistencies in Extranet and 
 1. Install the dependencies:
 
     ```bash
-    pip install -r requirements.txt
+    python -m pip install -r requirements.txt
+    # or python3 (or python3.whatever), depends on your system
     ```
 
 ## Usage
