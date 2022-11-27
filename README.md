@@ -24,7 +24,7 @@ A Python script to identify possible errors and inconsistencies in Extranet and 
 ## Usage
 
 ```bash
-extranet-operoo-diff.py <Extranet CSV file> <Operoo XLS file>
+python extranet-operoo-diff.py <Extranet CSV file> <Operoo XLS file>
 ```
 
 (See below for instructions for exporting the required files)
