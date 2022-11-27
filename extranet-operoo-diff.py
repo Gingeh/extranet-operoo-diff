@@ -10,11 +10,11 @@ pl.Config().set_tbl_rows(-1).set_tbl_hide_column_data_types()
 def read_xml(file: str) -> pl.LazyFrame:
     # The Operoo report has two spaces at the start of
     # the file which prevent it from being parsed correctly
-    original = open(file, mode="r").read()
+    with open(file, mode="r", encoding="utf8") as f:
+        original = f.read()
     root = Xet.fromstring(original[2:])
     namespace = {"doc": "urn:schemas-microsoft-com:office:spreadsheet"}
 
-    # TODO: Move casting here
     needed_columns = [
         "Profile Id",
         "Person Name",
@@ -62,7 +62,8 @@ def diff_map(
 
     print(
         joined.filter(
-            extranet_function(pl.col(extranet_column)) != operoo_function(pl.col(operoo_column))
+            extranet_function(pl.col(extranet_column))
+            != operoo_function(pl.col(operoo_column))
         )
         .filter(filter)
         .select(
@@ -116,25 +117,32 @@ print(pl.concat([missing_from_extranet, missing_from_operoo]))
 diff_map(
     "FullName",
     "Person Name",
-    function = lambda x: x.str.to_lowercase().str.strip().str.replace_all("\s+", " "),
+    function=lambda x: x.str.to_lowercase().str.strip().str.replace_all(r"\s+", " "),
 )
 
 # Primary contact name
 diff_map(
     "Primary Contact Firstname",
     "Profile Owner's Name ",
-    extranet_function = lambda x: pl.concat_str([x, pl.col("Primary Contact Surname")], sep=" ").str.to_lowercase().str.strip().str.replace_all("\s+", " "),
-    operoo_function = lambda x: x.str.to_lowercase().str.strip().str.replace_all("\s+", " "),
+    extranet_function=lambda x: pl.concat_str(
+        [x, pl.col("Primary Contact Surname")], sep=" "
+    )
+    .str.to_lowercase()
+    .str.strip()
+    .str.replace_all(r"\s+", " "),
+    operoo_function=lambda x: x.str.to_lowercase()
+    .str.strip()
+    .str.replace_all(r"\s+", " "),
     # Only check youth members
-    filter = pl.col("ClassID").is_in(["JOEY", "CUB", "SCOUT", "VENT"]),  # ROVER?
+    filter=pl.col("ClassID").is_in(["JOEY", "CUB", "SCOUT", "VENT"]),  # ROVER?
 )
 # Primary contact email
 diff_map(
     "Primary Contact Email",
     "Profile Owner's Email",
-    function = lambda x: x.str.to_lowercase().str.strip(),
+    function=lambda x: x.str.to_lowercase().str.strip(),
     # Only check youth members
-    filter = pl.col("ClassID").is_in(["JOEY", "CUB", "SCOUT", "VENT"]),  # ROVER?
+    filter=pl.col("ClassID").is_in(["JOEY", "CUB", "SCOUT", "VENT"]),  # ROVER?
 )
 
 # Primary contact mobile number
@@ -142,9 +150,9 @@ diff_map(
     "Primary Contact Mobile",
     "Profile Owner's Mobile Phone",
     # Strip area codes and leading zeros
-    function = lambda x: x.cast(pl.Utf8()).str.replace(r"\+61", "").cast(pl.Int64()),
+    function=lambda x: x.cast(pl.Utf8()).str.replace(r"\+61", "").cast(pl.Int64()),
     # Only check youth members
-    filter = pl.col("ClassID").is_in(["JOEY", "CUB", "SCOUT", "VENT"]),  # ROVER?
+    filter=pl.col("ClassID").is_in(["JOEY", "CUB", "SCOUT", "VENT"]),  # ROVER?
 )
 
 # Member's date of birth
@@ -152,8 +160,8 @@ diff_map(
     "DOB",
     "Person Birth Date",
     # Extranet uses "yyyy-mm-dd", Operoo uses "d Month yyyy"
-    extranet_function = lambda x: x.str.strptime(pl.Date, "%F"),
-    operoo_function = lambda x: x.str.strptime(pl.Date, "%e %B %Y"),
+    extranet_function=lambda x: x.str.strptime(pl.Date, "%F"),
+    operoo_function=lambda x: x.str.strptime(pl.Date, "%e %B %Y"),
 )
 
 # Member's city/state
