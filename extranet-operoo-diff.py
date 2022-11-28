@@ -39,6 +39,10 @@ def read_xml(file: str) -> pl.LazyFrame:
     return pl.DataFrame(data).lazy()
 
 
+if len(sys.argv) != 3:
+    print(f"USAGE: {sys.argv[0]} <Extranet CSV file> <Operoo XLS file>")
+    sys.exit(1)
+
 extranet = pl.scan_csv(sys.argv[1], ignore_errors=True)
 operoo = read_xml(sys.argv[2])
 
