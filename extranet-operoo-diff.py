@@ -2,7 +2,6 @@ from typing import Callable, Optional
 import xml.etree.ElementTree as Xet
 import sys
 import polars as pl
-import polars.internals as pli
 
 pl.Config().set_tbl_rows(-1).set_tbl_hide_column_data_types()
 
@@ -55,10 +54,10 @@ joined = extranet.join(operoo, left_on="RegID", right_on="Profile Id", how="inne
 def diff_map(
     extranet_column: str,
     operoo_column: str,
-    function: Optional[Callable[[pli.Expr], pli.Expr]] = None,
-    extranet_function: Callable[[pli.Expr], pli.Expr] = lambda x: x,
-    operoo_function: Callable[[pli.Expr], pli.Expr] = lambda x: x,
-    filter: pli.Expr = pl.lit(True),
+    function: Optional[Callable[[pl.Expr], pl.Expr]] = None,
+    extranet_function: Callable[[pl.Expr], pl.Expr] = lambda x: x,
+    operoo_function: Callable[[pl.Expr], pl.Expr] = lambda x: x,
+    filter: pl.Expr = pl.lit(True),
 ):
     if function is not None:
         extranet_function = function
